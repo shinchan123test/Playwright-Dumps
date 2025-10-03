@@ -1,0 +1,60 @@
+import { test, Locator, Page } from '@playwright/test'
+
+export default class LaboratoryPage {
+
+  private page: Page;
+  private laboratoryLink: Locator;
+  private laboratoryDashboard: Locator;
+  private sampleCollectionTab: Locator;
+  private from_date: Locator;
+  private ok_button: Locator;
+  private col_requestingDept: Locator;
+  private requestdept_hamburger: Locator;
+  private select_dropdown: Locator;
+  private start_with_option: Locator;
+  private req_dept_search: Locator;
+
+  constructor(page: Page) {
+    this.page = page;
+    this.laboratoryLink = page.getByRole('link', { name: 'Laboratory ' });
+    this.laboratoryDashboard = page.locator('');
+    this.sampleCollectionTab = page.locator('//a[@href="#/Lab/Requisition"]').nth(1);
+    this.from_date = page.locator("#date").nth(0);
+    this.ok_button = page.locator('//button[text()=" OK "]');
+    this.col_requestingDept = page.locator('');
+    this.requestdept_hamburger = page.locator("//span[text()='Requisition Date']/../../span");
+    this.select_dropdown = page.locator("#filterType");
+    this.start_with_option = page.locator("");
+    this.req_dept_search = page.locator("#filterText");
+  }
+
+  /**
+   * @Test9 Verify table filtering for "Male Ward"
+   *
+   * 1. Navigate to https://healthapp.yaksha.com/Home/Index#/Lab/Dashboard
+   * 2. Select the Sample Collections tab.
+   * 3. Enter From Date as 01-01-2020 and click OK.
+   * 4. Hover over the Requesting Department column and click Hamburger Menu.
+   * 5. Select Starts with from the dropdown.
+   * 6. Enter Male Ward in the text field.
+   *
+   *
+   */
+
+  async verifyTableFiltering() {
+    const counter = await this.page.locator("//a[text()='X']");
+    if (counter) {
+      await counter.click();
+    }
+    await this.laboratoryLink.click();
+    await this.sampleCollectionTab.click();
+    await this.from_date.fill('2020-01-01');
+    await this.ok_button.click();
+    await this.requestdept_hamburger.hover();
+    await this.requestdept_hamburger.click();
+    await this.select_dropdown.selectOption({ index: 2 });
+    await this.req_dept_search.fill('Male Ward')
+  }
+}
+
+
