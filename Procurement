@@ -1,0 +1,75 @@
+import { test, Locator, Page } from '@playwright/test'
+
+export default class ProcurementPage {
+
+  readonly page: Page;
+  private procurement: Locator;
+  private quotations: Locator;
+  private requestForQuotation: Locator;
+  private subject: Locator;
+  private description: Locator;
+  private selectVendor: Locator;
+  private dropdownOption: Locator;
+  private itemName: Locator;
+  private itemValue: Locator;
+  private dropdownArrowButton: Locator;
+  private quantity: Locator;
+  private requestButton: Locator;
+  private quotationGeneratedPopup: Locator;
+  quotationMessageText: string | null = null;
+
+  constructor(page: Page) {
+    this.page = page;
+    this.procurement = page.getByRole('link', { name: 'Procurement ' });
+    this.quotations = page.getByRole('link', { name: 'Quotation' });
+    this.requestForQuotation = page.getByRole('button', { name: 'Request For Quotation' });
+    this.subject = page.getByRole('textbox', { name: 'Subject' });
+    this.description = page.getByRole('textbox', { name: 'Description' });
+    this.selectVendor = page.getByText('---Select Vendor---');
+    this.dropdownOption = page.locator(``);
+    this.itemName = page.locator(`#itemName0`);
+    this.itemValue = page.locator(``);
+    this.dropdownArrowButton = page.locator(``);
+    this.quantity = page.locator(`#qtyip0`);
+    this.requestButton = page.locator(`#RequestButton`);
+    this.quotationGeneratedPopup = page.locator(`//p[text()='Request For Quotation is Generated and Saved']`);
+  }
+
+  /**
+   * @Test8 Verify Request for Quotation Generation
+   *
+   *
+   * This method verifies the process of generating a Request For Quotation (RFQ) in the Procurement section.
+   * It starts by navigating to the Procurement section and selecting the Quotation option, followed by clicking
+   * on "Request For Quotation". The method then fills in the subject and description fields, selects a vendor from
+   * the dropdown, and ensures the dropdown is visible and clicked. Next, it waits for the item name and quantity fields
+   * to be visible, then fills in the item details (name and quantity). After that, it clicks the "Request" button to submit
+   * the quotation request. The method waits for the "Request For Quotation is Generated and Saved" popup to appear and
+   * retrieves its text content. The text content of the popup is then stored in the `quotationMessageText` class property
+   * for further validation or assertion. The method includes necessary waits to ensure that elements are visible and ready
+   * before interaction, helping ensure that the process completes smoothly.
+   */
+  async verifyRequestForQuotationGeneration() {
+    const counter = await this.page.locator("//a[text()='X']");
+    if (counter) {
+      await counter.click();
+    }
+    await this.procurement.click()
+    await this.quotations.click()
+    await this.requestForQuotation.click()
+    await this.subject.fill('test subject')
+    await this.description.fill('test description')
+    await this.selectVendor.click();
+    await this.page.getByPlaceholder('Search').fill('Ashar & Company');
+    await this.page.getByText('Ashar & Company').click();
+    await this.itemName.fill('Soap');
+    await this.page.keyboard.press('Enter');
+    await this.quantity.fill('2');
+    await this.requestButton.click();
+    await this.quotationGeneratedPopup.innerText();
+    this.quotationMessageText = await this.quotationGeneratedPopup.innerText();
+
+  }
+}
+
+
